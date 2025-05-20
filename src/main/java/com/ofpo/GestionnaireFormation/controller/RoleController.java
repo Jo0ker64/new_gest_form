@@ -1,61 +1,57 @@
 package com.ofpo.GestionnaireFormation.controller;
 
+import com.ofpo.GestionnaireFormation.DTO.RoleDTO;
 import com.ofpo.GestionnaireFormation.model.Role;
-import com.ofpo.GestionnaireFormation.repository.RoleRepository;
+import com.ofpo.GestionnaireFormation.service.RoleService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/roles")
 public class RoleController {
-    private final RoleRepository roleRepository;
 
-    public RoleController(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
+    private final RoleService roleService;
+
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
     }
 
-    // retourne la liste complète des rôles
     @GetMapping("/")
-    public String findAll() {
-        return roleRepository.findAll().toString();
+    public List<RoleDTO> findAll() {
+        return roleService.findAll().stream()
+                .map(r -> new RoleDTO(r.getLibelle()))
+                .collect(Collectors.toList());
     }
-    // retourne un rôle via son id
+
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id) {
-        return roleRepository.findById(id).toString();
+    public RoleDTO findById(@PathVariable Long id) {
+        Role role = roleService.findById(id);
+        return new RoleDTO(role.getLibelle());
     }
 
-    // crée un rôle
     @PostMapping("/create")
-    public void add(@RequestBody Role role) {
-        roleRepository.save(role);
+    public RoleDTO add(@RequestBody RoleDTO dto) {
+        Role role = new Role();
+        role.setLibelle(dto.getLibelle());
+        Role saved = roleService.save(role);
+        return new RoleDTO(saved.getLibelle());
     }
 
-    // modifie un rôle
     @PutMapping("/update/{id}")
-    public void update(@PathVariable Long id, @RequestBody Role role) {
-        Optional<Role> existingRole = roleRepository.findById(id);
+    public RoleDTO update(@PathVariable Long id, @RequestBody RoleDTO dto) {
+        Role updated = roleService.updateFromDTO(id, dto);
+        return new RoleDTO(updated.getLibelle());
     }
 
-    // supprime un rôle
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
-        Optional<Role> role = roleRepository.findById(id);
-        if (role.isPresent()) {
-            roleRepository.delete(role.get());
-        }
+        roleService.deleteById(id);
     }
 
-    // désactive un rôle
     @PutMapping("/disable/{id}")
     public void disable(@PathVariable Long id) {
-        Optional<Role> role = roleRepository.findById(id);
-        if (role != null) {
-            Role r = role.get();
-            r.setStatut(false);
-            roleRepository.save(r);
-        }
-
+        roleService.disable(id);
     }
 }

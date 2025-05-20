@@ -1,21 +1,19 @@
 package com.ofpo.GestionnaireFormation.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
+@Getter
+@Setter
 public class FormationRessourceKey implements Serializable {
 
     private Long formationId;
     private Long ressourceId;
-
-    public FormationRessourceKey() {}
-
-    public FormationRessourceKey(Long formationId, Long ressourceId) {
-        this.formationId = formationId;
-        this.ressourceId = ressourceId;
-    }
 
     // equals() & hashCode()
     @Override
@@ -30,22 +28,5 @@ public class FormationRessourceKey implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(formationId, ressourceId);
-    }
-
-    // Getters & Setters...
-    public Long getFormationId() {
-        return formationId;
-    }
-
-    public void setFormationId(Long formationId) {
-        this.formationId = formationId;
-    }
-
-    public Long getRessourceId() {
-        return ressourceId;
-    }
-
-    public void setRessourceId(Long ressourceId) {
-        this.ressourceId = ressourceId;
     }
 }

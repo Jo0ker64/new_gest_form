@@ -1,7 +1,8 @@
 package com.ofpo.GestionnaireFormation.service;
 
+import com.ofpo.GestionnaireFormation.DTO.FormationDTO;
 import com.ofpo.GestionnaireFormation.model.Formation;
-import com.ofpo.GestionnaireFormation.repository.*;
+import com.ofpo.GestionnaireFormation.repository.FormationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,51 +11,42 @@ import java.util.List;
 public class FormationService {
 
     private final FormationRepository formationRepository;
-    private final UtilisateurRepository utilisateurRepository;
-    private final ModuleRepository moduleRepository;
-    private final CentreRepository centreRepository;
-    private final DocumentRepository documentRepository;
-    private final RessourceRepository ressourceRepository;
 
-    public FormationService(FormationRepository formationRepository,
-                            ModuleRepository moduleRepository,
-                            CentreRepository centreRepository,
-                            DocumentRepository documentRepository,
-                            RessourceRepository ressourceRepository,
-                            UtilisateurRepository utilisateurRepository) {
+    public FormationService(FormationRepository formationRepository) {
         this.formationRepository = formationRepository;
-        this.moduleRepository = moduleRepository;
-        this.centreRepository = centreRepository;
-        this.documentRepository = documentRepository;
-        this.ressourceRepository = ressourceRepository;
-        this.utilisateurRepository = utilisateurRepository;
     }
 
-    // Retourne toutes les formations
     public List<Formation> findAll() {
         return formationRepository.findAll();
     }
 
-    // Retourne une formation par id
     public Formation findById(Long id) {
-        return formationRepository.findById(id).orElse(null);
+        return formationRepository.findById(id).orElseThrow(() -> new RuntimeException("Formation non trouvée"));
     }
 
-    // Crée ou met à jour une formation
     public Formation save(Formation formation) {
         return formationRepository.save(formation);
     }
 
-    // Supprime une formation
     public void deleteById(Long id) {
-        formationRepository.findById(id).ifPresent(formationRepository::delete);
+        formationRepository.deleteById(id);
     }
 
-    // Modifie le statut actif/inactif
     public void disable(Long id) {
-        formationRepository.findById(id).ifPresent(formation -> {
-            formation.setStatut(false);
-            formationRepository.save(formation);
-        });
+        Formation f = findById(id);
+        f.setStatut(false);
+        formationRepository.save(f);
+    }
+
+    public Formation updateFromDTO(Long id, FormationDTO dto) {
+        Formation f = findById(id);
+        f.setLibelle(dto.getLibelle());
+        f.setNumeroOffre(dto.getNumeroOffre());
+        f.setStatut(dto.isStatut());
+        return formationRepository.save(f);
+    }
+
+    public FormationDTO mapToDTO(Formation f) {
+        return new FormationDTO(f.getNumeroOffre(), f.getLibelle(), f.getStatut());
     }
 }

@@ -1,5 +1,6 @@
 package com.ofpo.GestionnaireFormation.service;
 
+import com.ofpo.GestionnaireFormation.DTO.RoleDTO;
 import com.ofpo.GestionnaireFormation.model.Role;
 import com.ofpo.GestionnaireFormation.repository.RoleRepository;
 import org.springframework.stereotype.Service;
@@ -15,29 +16,35 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-    // Retourne tous les rôles
     public List<Role> findAll() {
         return roleRepository.findAll();
     }
 
-    // Retourne un rôle par ID
     public Role findById(Long id) {
-        return roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rôle non trouvé avec l'id : " + id));
+        return roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role non trouvé"));
     }
 
-    // Retourne plusieurs rôles à partir d'une liste d'identifiants
-    public List<Role> findAllByIds(List<Long> ids) {
-        return roleRepository.findAllById(ids);
-    }
-
-    // Sauvegarde ou met à jour un rôle
     public Role save(Role role) {
         return roleRepository.save(role);
     }
 
-    // Supprime un rôle
     public void deleteById(Long id) {
         roleRepository.deleteById(id);
+    }
+
+    public void disable(Long id) {
+        Role r = findById(id);
+        r.setStatut(false);
+        roleRepository.save(r);
+    }
+
+    public Role updateFromDTO(Long id, RoleDTO dto) {
+        Role r = findById(id);
+        r.setLibelle(dto.getLibelle());
+        return roleRepository.save(r);
+    }
+
+    public RoleDTO mapToDTO(Role r) {
+        return new RoleDTO(r.getLibelle());
     }
 }

@@ -1,9 +1,13 @@
 package com.ofpo.GestionnaireFormation.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "module")
 public class Module {
@@ -15,6 +19,7 @@ public class Module {
     private String libelle;
 
     @ManyToMany(mappedBy = "modules")
+    @JsonIgnore
     private List<Formation> formations = new ArrayList<>();
 
     @ManyToMany
@@ -23,37 +28,7 @@ public class Module {
             joinColumns = @JoinColumn(name = "id_module"),
             inverseJoinColumns = @JoinColumn(name = "id_sequence")
     )
+    @JsonIgnore
     private List<Sequence> sequences = new ArrayList<>();
 
-    public Module() {}
-
-    public Module(Long id, String libelle) {
-        this.id = id;
-        this.libelle = libelle;
-    }
-
-// Getters & Setters...
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public List<Formation> getFormations() {
-        return formations;
-    }
-
-    public void setFormations(List<Formation> formations) {
-        this.formations = formations;
-    }
 }
