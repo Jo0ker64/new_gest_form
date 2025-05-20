@@ -17,7 +17,7 @@ public class Centre {
     private Long id;
 
     private String nom;
-    private String adressePostale;
+    private String adressePostal;
     private String ville;
     private String codePostal;
     private String telephone;

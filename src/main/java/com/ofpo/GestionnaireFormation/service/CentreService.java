@@ -33,7 +33,7 @@ public class CentreService {
         Centre existing = centreRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Centre non trouvé avec l'id : " + id));
         existing.setNom(centreDetails.getNom());
-        existing.setAdressePostale(centreDetails.getAdressePostale());
+        existing.setAdressePostal(centreDetails.getAdressePostal());
         existing.setVille(centreDetails.getVille());
         existing.setCodePostal(centreDetails.getCodePostal());
         existing.setTelephone(centreDetails.getTelephone());

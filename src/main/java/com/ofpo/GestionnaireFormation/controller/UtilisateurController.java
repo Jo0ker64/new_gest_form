@@ -5,6 +5,7 @@ import com.ofpo.GestionnaireFormation.model.Utilisateur;
 import com.ofpo.GestionnaireFormation.service.UtilisateurService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
 import java.util.List;
 
 // CONTROLLER SANS LE DTO
@@ -53,13 +54,6 @@ import java.util.List;
 //        utilisateurService.disableByMatricule(matricule);
 //    }
 //}
-import com.ofpo.GestionnaireFormation.DTO.UtilisateurDTO;
-import com.ofpo.GestionnaireFormation.model.Utilisateur;
-import com.ofpo.GestionnaireFormation.service.UtilisateurService;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 // AVEC DTO
 @RestController
@@ -67,6 +61,7 @@ import java.util.stream.Collectors;
 public class UtilisateurController {
 
     private final UtilisateurService utilisateurService;
+    private UtilisateurDTO utilisateurDTO;
 
     public UtilisateurController(UtilisateurService utilisateurService) {
         this.utilisateurService = utilisateurService;
@@ -87,7 +82,7 @@ public class UtilisateurController {
     @PostMapping("/create")
     public UtilisateurDTO add(@RequestBody UtilisateurDTO dto) {
         Utilisateur saved = utilisateurService.saveFromDTO(dto);
-        return utilisateurService.mapToDTO(saved);
+        return utilisateurDTO;
     }
 
     @PutMapping("/update/{matricule}")
