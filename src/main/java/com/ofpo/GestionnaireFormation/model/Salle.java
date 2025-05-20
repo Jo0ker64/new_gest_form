@@ -19,5 +19,4 @@ public class Salle {
     @JoinColumn(name = "id_centre")
     @JsonIgnore
     private Centre centre;
-
 }

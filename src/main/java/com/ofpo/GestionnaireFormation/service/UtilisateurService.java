@@ -100,29 +100,21 @@ public class UtilisateurService {
     public Utilisateur saveFromDTO(UtilisateurDTO dto) {
         Utilisateur u = new Utilisateur();
         u.setMatricule(dto.getMatricule());
-        u.setAvatar(dto.getAvatar());
         u.setNom(dto.getNom());
         u.setPrenom(dto.getPrenom());
         u.setAdresseMail(dto.getAdresseMail());
-        u.setAdressePostal(dto.getAdressePostal());
         u.setCodePostal(dto.getCodePostal());
         u.setVille(dto.getVille());
-        u.setMotDePasse(dto.getMotDePasse());
-        u.setStatut(dto.getStatut());
         return utilisateurRepository.save(u);
     }
 
     public Utilisateur updateFromDTO(String matricule, UtilisateurDTO dto) {
         Utilisateur existing = utilisateurRepository.findByMatricule(matricule);
-        existing.setAvatar(dto.getAvatar());
         existing.setNom(dto.getNom());
         existing.setPrenom(dto.getPrenom());
         existing.setAdresseMail(dto.getAdresseMail());
-        existing.setAdressePostal(dto.getAdressePostal());
         existing.setCodePostal(dto.getCodePostal());
         existing.setVille(dto.getVille());
-        existing.setMotDePasse(dto.getMotDePasse());
-        existing.setStatut(dto.getStatut());
         return utilisateurRepository.save(existing);
     }
 
@@ -140,15 +132,11 @@ public class UtilisateurService {
     public UtilisateurDTO mapToDTO(Utilisateur u) {
         return new UtilisateurDTO(
                 u.getMatricule(),
-                u.getAvatar(),
                 u.getNom(),
                 u.getPrenom(),
                 u.getAdresseMail(),
-                u.getAdressePostal(),
                 u.getCodePostal(),
-                u.getVille(),
-                u.getMotDePasse(),
-                u.getStatut()
+                u.getVille()
         );
 
     }
