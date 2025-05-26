@@ -24,8 +24,18 @@ public class RoleService {
         return roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role non trouvé"));
     }
 
-    public Role save(Role role) {
-        return roleRepository.save(role);
+    public Role saveFromDTO(RoleDTO dto) {
+        Role r = new Role();
+        r.setLibelle(dto.getLibelle());
+        r.setStatut(dto.getStatut());
+        return roleRepository.save(r);
+    }
+
+    public Role updateFromDTO(Long id, RoleDTO dto) {
+        Role r = findById(id);
+        r.setLibelle(dto.getLibelle());
+        r.setStatut(dto.getStatut());
+        return roleRepository.save(r);
     }
 
     public void deleteById(Long id) {
@@ -38,13 +48,9 @@ public class RoleService {
         roleRepository.save(r);
     }
 
-    public Role updateFromDTO(Long id, RoleDTO dto) {
-        Role r = findById(id);
-        r.setLibelle(dto.getLibelle());
-        return roleRepository.save(r);
-    }
-
     public RoleDTO mapToDTO(Role r) {
-        return new RoleDTO(r.getLibelle());
+        return new RoleDTO(
+                r.getLibelle()
+        );
     }
 }

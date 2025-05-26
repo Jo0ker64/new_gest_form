@@ -1,11 +1,14 @@
 package com.ofpo.GestionnaireFormation.controller;
 
-import com.ofpo.GestionnaireFormation.DTO.UtilisateurDTO;
+import com.ofpo.GestionnaireFormation.DTO.RoleDTO;
+import com.ofpo.GestionnaireFormation.DTO.utilisateur.UtilisateurCreateDTO;
+import com.ofpo.GestionnaireFormation.DTO.utilisateur.UtilisateurDTO;
+import com.ofpo.GestionnaireFormation.DTO.utilisateur.UtilisateurUpdateDTO;
+import com.ofpo.GestionnaireFormation.model.Formation;
 import com.ofpo.GestionnaireFormation.model.Utilisateur;
-import com.ofpo.GestionnaireFormation.service.UtilisateurService;
+import com.ofpo.GestionnaireFormation.repository.UtilisateurRepository;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors;
 import java.util.List;
 
 // CONTROLLER SANS LE DTO
@@ -60,44 +63,159 @@ import java.util.List;
 @RequestMapping("/utilisateurs")
 public class UtilisateurController {
 
-    private final UtilisateurService utilisateurService;
-    private UtilisateurDTO utilisateurDTO;
+    private final UtilisateurRepository utilisateurRepository;
 
-    public UtilisateurController(UtilisateurService utilisateurService) {
-        this.utilisateurService = utilisateurService;
+    public UtilisateurController(UtilisateurRepository utilisateurRepository) {
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     @GetMapping("/")
     public List<UtilisateurDTO> findAll() {
-        return utilisateurService.findAll().stream()
-                .map(utilisateurService::mapToDTO)
-                .collect(Collectors.toList());
+        // retourne la liste complète des utilisateurs (AVEC DTO)
+        List<Utilisateur> utilisateurs=  this.utilisateurRepository.findAll();
+        // Utilisation du DTO
+        return utilisateurs.stream().map(utilisateur -> {
+            // UTILISATEUR
+            UtilisateurDTO dto = new UtilisateurDTO();
+            dto.setMatricule(utilisateur.getMatricule());
+            dto.setNom(utilisateur.getNom());
+            dto.setPrenom(utilisateur.getPrenom());
+            dto.setAdresseMail(utilisateur.getAdresseMail());
+            // ROLES
+            List<RoleDTO> roleDtos = utilisateur.getRoles().stream()
+                    .map(role -> new RoleDTO(role.getLibelle()))
+                    .toList();
+            dto.setRoles(roleDtos);
+            return dto;
+        }).toList();
     }
 
     @GetMapping("/{matricule}")
-    public UtilisateurDTO findByMatricule(@PathVariable String matricule) {
-        return utilisateurService.mapToDTO(utilisateurService.findByMatricule(matricule));
+    public List<UtilisateurDTO> findByMatricule(@PathVariable String matricule) {
+        // retourner un utilisateur via un numéro de matricule
+        Utilisateur utilisateur = this.utilisateurRepository.findByMatricule(matricule);
+        // Utilisation du DTO
+        UtilisateurDTO dto = new UtilisateurDTO();
+        dto.setMatricule(utilisateur.getMatricule());
+        dto.setNom(utilisateur.getNom());
+        dto.setPrenom(utilisateur.getPrenom());
+        dto.setAdresseMail(utilisateur.getAdresseMail());
+        // ROLES
+        List<RoleDTO> roleDtos = utilisateur.getRoles().stream()
+                .map(role -> new RoleDTO(role.getLibelle()))
+                .toList();
+        dto.setRoles(roleDtos);
+        return List.of(dto);
     }
 
     @PostMapping("/create")
-    public UtilisateurDTO add(@RequestBody UtilisateurDTO dto) {
-        Utilisateur saved = utilisateurService.saveFromDTO(dto);
-        return utilisateurDTO;
+    public UtilisateurCreateDTO add(@RequestBody UtilisateurCreateDTO dto) {
+        // ajouter un utilisateur en base de données
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setMatricule(dto.getMatricule());
+        utilisateur.setAvatar(dto.getAvatar());
+        utilisateur.setNom(dto.getNom());
+        utilisateur.setPrenom(dto.getPrenom());
+        utilisateur.setAdresseMail(dto.getAdresseMail());
+        utilisateur.setAdressePostal(dto.getAdressePostal());
+        utilisateur.setCodePostal(dto.getCodePostal());
+        utilisateur.setVille(dto.getVille());
+        utilisateur.setMotDePasse(dto.getMotDePasse());
+        utilisateur.setStatut(dto.getStatut());
+        // ROLES
+        List<RoleDTO> roleDtos = dto.getRoles().stream()
+                .map(role -> new RoleDTO(role.getLibelle()))
+                .toList();
+        dto.setRoles(roleDtos);
+        this.utilisateurRepository.save(utilisateur);
+        return dto;
     }
 
     @PutMapping("/update/{matricule}")
-    public UtilisateurDTO update(@PathVariable String matricule, @RequestBody UtilisateurDTO dto) {
-        Utilisateur updated = utilisateurService.updateFromDTO(matricule, dto);
-        return utilisateurService.mapToDTO(updated);
+    public UtilisateurUpdateDTO update(@PathVariable String matricule, @RequestBody UtilisateurUpdateDTO dto) {
+        // modifier un utilisateur en base de données
+        Utilisateur utilisateur = this.utilisateurRepository.findByMatricule(matricule);
+        utilisateur.setNom(dto.getNom());
+        utilisateur.setPrenom(dto.getPrenom());
+        utilisateur.setAdresseMail(dto.getAdresseMail());
+        utilisateur.setStatut(dto.getStatut());
+        this.utilisateurRepository.save(utilisateur);
+        return dto;
     }
 
     @DeleteMapping("/delete/{matricule}")
     public void delete(@PathVariable String matricule) {
-        utilisateurService.deleteByMatricule(matricule);
+        // supprime un utilisateur en base de données
+        Utilisateur utilisateur = this.utilisateurRepository.findByMatricule(matricule);
+        this.utilisateurRepository.delete(utilisateur);
     }
 
-    @PutMapping("/disable/{matricule}")
-    public void disable(@PathVariable String matricule) {
-        utilisateurService.disableByMatricule(matricule);
+    //  AJOUT : Récupérer les formations d’un utilisateur
+    @GetMapping("/{matricule}/formations")
+    public List<Formation> getFormations(@PathVariable String matricule) {
+        Utilisateur utilisateur = this.utilisateurRepository.findByMatricule(matricule);
+        return utilisateur.getFormations();
+    }
+
+    // 🔄 AJOUT : Modifier les formations d’un utilisateur
+    @PutMapping("/{matricule}/formations")
+    public List<Formation> updateFormations(
+            @PathVariable String matricule,
+            @RequestBody List<Formation> nouvellesFormations
+    ) {
+        Utilisateur utilisateur = this.utilisateurRepository.findByMatricule(matricule);
+        utilisateur.setFormations(nouvellesFormations);
+        utilisateurRepository.save(utilisateur);
+        return utilisateur.getFormations();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @GetMapping("/")
+//    public List<UtilisateurDTO> findAll() {
+//        return utilisateurService.findAll().stream()
+//                .map(utilisateurService::mapToDTO)
+//                .collect(Collectors.toList());
+//    }
+//
+//    @GetMapping("/{matricule}")
+//    public UtilisateurDTO findByMatricule(@PathVariable String matricule) {
+//        return utilisateurService.mapToDTO(
+//                utilisateurService.findByMatricule(matricule));
+//    }
+//
+//    @PostMapping("/create")
+//    public UtilisateurDTO add(@RequestBody UtilisateurDTO dto) {
+//        Utilisateur saved = utilisateurService.saveFromDTO(dto);
+//        return utilisateurDTO;
+//    }
+//
+//    @PutMapping("/update/{matricule}")
+//    public UtilisateurDTO update(@PathVariable String matricule, @RequestBody UtilisateurDTO dto) {
+//        Utilisateur updated = utilisateurService.updateFromDTO(matricule, dto);
+//        return utilisateurService.mapToDTO(updated);
+//    }
+//
+//    @DeleteMapping("/delete/{matricule}")
+//    public void delete(@PathVariable String matricule) {
+//        utilisateurService.deleteByMatricule(matricule);
+//    }
+//
+//    @PutMapping("/disable/{matricule}")
+//    public void disable(@PathVariable String matricule) {
+//        utilisateurService.disableByMatricule(matricule);
+//    }

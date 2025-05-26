@@ -8,11 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.hibernate.Hibernate.map;
+
 @RestController
 @RequestMapping("/roles")
 public class RoleController {
 
     private final RoleService roleService;
+    private RoleDTO roleDTO;
 
     public RoleController(RoleService roleService) {
         this.roleService = roleService;
@@ -21,28 +24,26 @@ public class RoleController {
     @GetMapping("/")
     public List<RoleDTO> findAll() {
         return roleService.findAll().stream()
-                .map(r -> new RoleDTO(r.getLibelle()))
+                .map(roleService::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public RoleDTO findById(@PathVariable Long id) {
-        Role role = roleService.findById(id);
-        return new RoleDTO(role.getLibelle());
+        return roleService.mapToDTO(
+                roleService.findById(id));
     }
 
     @PostMapping("/create")
     public RoleDTO add(@RequestBody RoleDTO dto) {
-        Role role = new Role();
-        role.setLibelle(dto.getLibelle());
-        Role saved = roleService.save(role);
-        return new RoleDTO(saved.getLibelle());
+        Role saved = roleService.saveFromDTO(dto);
+        return roleDTO;
     }
 
     @PutMapping("/update/{id}")
     public RoleDTO update(@PathVariable Long id, @RequestBody RoleDTO dto) {
         Role updated = roleService.updateFromDTO(id, dto);
-        return new RoleDTO(updated.getLibelle());
+        return roleService.mapToDTO(updated);
     }
 
     @DeleteMapping("/delete/{id}")

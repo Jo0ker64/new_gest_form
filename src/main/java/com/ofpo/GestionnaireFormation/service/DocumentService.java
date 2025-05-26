@@ -1,11 +1,13 @@
 package com.ofpo.GestionnaireFormation.service;
 
 import com.ofpo.GestionnaireFormation.DTO.DocumentDTO;
+import com.ofpo.GestionnaireFormation.mapper.DocumentMapper;
 import com.ofpo.GestionnaireFormation.model.Document;
 import com.ofpo.GestionnaireFormation.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DocumentService {
@@ -16,30 +18,32 @@ public class DocumentService {
         this.documentRepository = documentRepository;
     }
 
-    public List<Document> findAll() {
-        return documentRepository.findAll();
+    public List<DocumentDTO> getAllDocuments() {
+        return documentRepository.findAll()
+                .stream()
+                .map(DocumentMapper::toDTO)
+                .toList();
     }
 
-    public Document findById(Long id) {
-        return documentRepository.findById(id).orElseThrow(() -> new RuntimeException("Document non trouvé"));
+    public Optional<DocumentDTO> getDocumentById(Long id) {
+        return documentRepository.findById(id).map(DocumentMapper::toDTO);
     }
 
-    public Document save(Document document) {
-        return documentRepository.save(document);
+    public DocumentDTO createDocument(DocumentDTO dto) {
+        Document doc = DocumentMapper.toEntity(dto);
+        return DocumentMapper.toDTO(documentRepository.save(doc));
     }
 
-    public Document updateFromDTO(Long id, DocumentDTO dto) {
-        Document doc = documentRepository.findById(id).orElseThrow(() -> new RuntimeException("Document non trouvé"));
+    public DocumentDTO updateDocument(Long id, DocumentDTO dto) {
+        Optional<Document> opt = documentRepository.findById(id);
+        if (opt.isEmpty()) return null;
+        Document doc = opt.get();
         doc.setLibelle(dto.getLibelle());
         doc.setDateCreation(dto.getDateCreation());
-        return documentRepository.save(doc);
+        return DocumentMapper.toDTO(documentRepository.save(doc));
     }
 
-    public void deleteById(Long id) {
+    public void deleteDocument(Long id) {
         documentRepository.deleteById(id);
-    }
-
-    public DocumentDTO mapToDTO(Document d) {
-        return new DocumentDTO(d.getLibelle(), d.getDateCreation());
     }
 }

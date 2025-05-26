@@ -1,12 +1,10 @@
 package com.ofpo.GestionnaireFormation.controller;
 
 import com.ofpo.GestionnaireFormation.DTO.CentreDTO;
-import com.ofpo.GestionnaireFormation.model.Centre;
 import com.ofpo.GestionnaireFormation.service.CentreService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/centres")
@@ -19,35 +17,27 @@ public class CentreController {
     }
 
     @GetMapping("/")
-    public List<CentreDTO> findAll() {
-        return centreService.findAll().stream()
-                .map(c -> new CentreDTO(c.getNom(), c.getVille()))
-                .collect(Collectors.toList());
+    public List<CentreDTO> getAll() {
+        return centreService.getAllCentres();
     }
 
     @GetMapping("/{id}")
-    public CentreDTO findById(@PathVariable Long id) {
-        Centre c = centreService.findById(id);
-        return new CentreDTO(c.getNom(), c.getVille());
+    public CentreDTO getById(@PathVariable Long id) {
+        return centreService.getCentreById(id).orElse(null);
     }
 
     @PostMapping("/create")
     public CentreDTO create(@RequestBody CentreDTO dto) {
-        Centre centre = new Centre();
-        centre.setNom(dto.getNom());
-        centre.setVille(dto.getVille());
-        Centre saved = centreService.save(centre);
-        return new CentreDTO(saved.getNom(), saved.getVille());
+        return centreService.createCentre(dto);
     }
 
     @PutMapping("/update/{id}")
     public CentreDTO update(@PathVariable Long id, @RequestBody CentreDTO dto) {
-        Centre updated = centreService.updateFromDTO(id, dto);
-        return new CentreDTO(updated.getNom(), updated.getVille());
+        return centreService.updateCentre(id, dto);
     }
 
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
-        centreService.deleteById(id);
+        centreService.deleteCentre(id);
     }
 }

@@ -5,7 +5,6 @@ import lombok.Data;
 
 import java.util.Date;
 
-@Data
 @Entity
 @Table(name = "formation_ressource")
 public class FormationRessource {
@@ -24,4 +23,47 @@ public class FormationRessource {
     private Ressource ressource;
 
     private Date dateAjout;
+
+    // Constructeurs, getters et setters
+    public FormationRessource() {
+    }
+
+    public FormationRessource(FormationRessourceKey id, Formation formation, Ressource ressource, Date dateAjout) {
+        this.id = id;
+        this.formation = formation;
+        this.ressource = ressource;
+        this.dateAjout = dateAjout;
+    }
+
+    public FormationRessourceKey getId() {
+        return id;
+    }
+
+    public void setId(FormationRessourceKey id) {
+        this.id = id;
+    }
+
+    public Formation getFormation() {
+        return formation;
+    }
+
+    public void setFormation(Formation formation) {
+        this.formation = formation;
+    }
+
+    public Ressource getRessource() {
+        return ressource;
+    }
+
+    public void setRessource(Ressource ressource) {
+        this.ressource = ressource;
+    }
+
+    public Date getDateAjout() {
+        return dateAjout;
+    }
+
+    public void setDateAjout(Date dateAjout) {
+        this.dateAjout = dateAjout;
+    }
 }

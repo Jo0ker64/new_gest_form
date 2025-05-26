@@ -1,12 +1,10 @@
 package com.ofpo.GestionnaireFormation.controller;
 
 import com.ofpo.GestionnaireFormation.DTO.ModuleDTO;
-import com.ofpo.GestionnaireFormation.model.Module;
 import com.ofpo.GestionnaireFormation.service.ModuleService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/modules")
@@ -20,33 +18,26 @@ public class ModuleController {
 
     @GetMapping("/")
     public List<ModuleDTO> getAll() {
-        return moduleService.findAll().stream()
-                .map(m -> new ModuleDTO(m.getLibelle()))
-                .collect(Collectors.toList());
+        return moduleService.getAllModules();
     }
 
     @GetMapping("/{id}")
     public ModuleDTO getById(@PathVariable Long id) {
-        Module m = moduleService.findById(id);
-        return new ModuleDTO(m.getLibelle());
+        return moduleService.getModuleById(id).orElse(null);
     }
 
     @PostMapping("/create")
     public ModuleDTO create(@RequestBody ModuleDTO dto) {
-        Module module = new Module();
-        module.setLibelle(dto.getLibelle());
-        Module saved = moduleService.save(module);
-        return new ModuleDTO(saved.getLibelle());
+        return moduleService.createModule(dto);
     }
 
     @PutMapping("/update/{id}")
     public ModuleDTO update(@PathVariable Long id, @RequestBody ModuleDTO dto) {
-        Module updated = moduleService.updateFromDTO(id, dto);
-        return new ModuleDTO(updated.getLibelle());
+        return moduleService.updateModule(id, dto);
     }
 
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
-        moduleService.deleteById(id);
+        moduleService.deleteModule(id);
     }
 }

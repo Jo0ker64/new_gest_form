@@ -1,11 +1,13 @@
 package com.ofpo.GestionnaireFormation.service;
 
 import com.ofpo.GestionnaireFormation.DTO.ModuleDTO;
+import com.ofpo.GestionnaireFormation.mapper.ModuleMapper;
 import com.ofpo.GestionnaireFormation.model.Module;
 import com.ofpo.GestionnaireFormation.repository.ModuleRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ModuleService {
@@ -16,29 +18,31 @@ public class ModuleService {
         this.moduleRepository = moduleRepository;
     }
 
-    public List<Module> findAll() {
-        return moduleRepository.findAll();
+    public List<ModuleDTO> getAllModules() {
+        return moduleRepository.findAll()
+                .stream()
+                .map(ModuleMapper::toDTO)
+                .toList();
     }
 
-    public Module findById(Long id) {
-        return moduleRepository.findById(id).orElseThrow(() -> new RuntimeException("Module non trouvé"));
+    public Optional<ModuleDTO> getModuleById(Long id) {
+        return moduleRepository.findById(id).map(ModuleMapper::toDTO);
     }
 
-    public Module save(Module module) {
-        return moduleRepository.save(module);
+    public ModuleDTO createModule(ModuleDTO dto) {
+        Module module = ModuleMapper.toEntity(dto);
+        return ModuleMapper.toDTO(moduleRepository.save(module));
     }
 
-    public Module updateFromDTO(Long id, ModuleDTO dto) {
-        Module m = findById(id);
-        m.setLibelle(dto.getLibelle());
-        return moduleRepository.save(m);
+    public ModuleDTO updateModule(Long id, ModuleDTO dto) {
+        Optional<Module> opt = moduleRepository.findById(id);
+        if (opt.isEmpty()) return null;
+        Module module = opt.get();
+        module.setLibelle(dto.getLibelle());
+        return ModuleMapper.toDTO(moduleRepository.save(module));
     }
 
-    public void deleteById(Long id) {
+    public void deleteModule(Long id) {
         moduleRepository.deleteById(id);
-    }
-
-    public ModuleDTO mapToDTO(Module m) {
-        return new ModuleDTO(m.getLibelle());
     }
 }

@@ -1,11 +1,13 @@
 package com.ofpo.GestionnaireFormation.service;
 
 import com.ofpo.GestionnaireFormation.DTO.CentreDTO;
+import com.ofpo.GestionnaireFormation.mapper.CentreMapper;
 import com.ofpo.GestionnaireFormation.model.Centre;
 import com.ofpo.GestionnaireFormation.repository.CentreRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CentreService {
@@ -16,45 +18,35 @@ public class CentreService {
         this.centreRepository = centreRepository;
     }
 
-    public List<Centre> findAll() {
-        return centreRepository.findAll();
+    public List<CentreDTO> getAllCentres() {
+        return centreRepository.findAll()
+                .stream()
+                .map(CentreMapper::toDTO)
+                .toList();
     }
 
-    public Centre findById(Long id) {
-        return centreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Centre non trouvé avec l'id : " + id));
+    public Optional<CentreDTO> getCentreById(Long id) {
+        return centreRepository.findById(id).map(CentreMapper::toDTO);
     }
 
-    public Centre save(Centre centre) {
-        return centreRepository.save(centre);
+    public CentreDTO createCentre(CentreDTO dto) {
+        Centre centre = CentreMapper.toEntity(dto);
+        return CentreMapper.toDTO(centreRepository.save(centre));
     }
 
-    public Centre update(Long id, Centre centreDetails) {
-        Centre existing = centreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Centre non trouvé avec l'id : " + id));
-        existing.setNom(centreDetails.getNom());
-        existing.setAdressePostal(centreDetails.getAdressePostal());
-        existing.setVille(centreDetails.getVille());
-        existing.setCodePostal(centreDetails.getCodePostal());
-        existing.setTelephone(centreDetails.getTelephone());
-        return centreRepository.save(existing);
+    public CentreDTO updateCentre(Long id, CentreDTO dto) {
+        Optional<Centre> opt = centreRepository.findById(id);
+        if (opt.isEmpty()) return null;
+        Centre centre = opt.get();
+        centre.setNom(dto.getNom());
+        centre.setAdressePostal(dto.getAdressePostal());
+        centre.setCodePostal(dto.getCodePostal());
+        centre.setVille(dto.getVille());
+        centre.setTelephone(dto.getTelephone());
+        return CentreMapper.toDTO(centreRepository.save(centre));
     }
 
-    public Centre updateFromDTO(Long id, CentreDTO dto) {
-        Centre existing = centreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Centre non trouvé avec l'id : " + id));
-        existing.setNom(dto.getNom());
-        existing.setVille(dto.getVille());
-        return centreRepository.save(existing);
-    }
-
-    public CentreDTO mapToDTO(Centre c) {
-        return new CentreDTO(c.getNom(), c.getVille());
-    }
-
-    public void deleteById(Long id) {
-        Centre centre = centreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Centre non trouvé avec l'id : " + id));
-        centreRepository.delete(centre);
+    public void deleteCentre(Long id) {
+        centreRepository.deleteById(id);
     }
 }

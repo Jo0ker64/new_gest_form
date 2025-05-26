@@ -7,7 +7,6 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "module")
 public class Module {
@@ -31,4 +30,46 @@ public class Module {
     @JsonIgnore
     private List<Sequence> sequences = new ArrayList<>();
 
+    public Module() {
+    }
+
+    public Module(Long id, String libelle, List<Formation> formations, List<Sequence> sequences) {
+        this.id = id;
+        this.libelle = libelle;
+        this.formations = formations;
+        this.sequences = sequences;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getLibelle() {
+        return libelle;
+    }
+
+    public void setLibelle(String libelle) {
+        this.libelle = libelle;
+    }
+
+    public List<Formation> getFormations() {
+        return formations;
+    }
+
+    public void setFormations(List<Formation> formations) {
+        this.formations = formations;
+    }
+
+    public List<Sequence> getSequences() {
+        return sequences;
+    }
+
+    public void setSequences(List<Sequence> sequences) {
+        this.sequences = sequences;
+    }
 }
+

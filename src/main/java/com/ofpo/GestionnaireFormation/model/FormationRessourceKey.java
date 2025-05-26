@@ -8,8 +8,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-@Getter
-@Setter
 public class FormationRessourceKey implements Serializable {
 
     private Long formationId;
@@ -28,5 +26,32 @@ public class FormationRessourceKey implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(formationId, ressourceId);
+    }
+
+    // Constructor vide
+    public FormationRessourceKey() {
+    }
+
+    // Default constructor
+    public FormationRessourceKey(Long formationId, Long ressourceId) {
+        this.formationId = formationId;
+        this.ressourceId = ressourceId;
+    }
+
+    // Getters and Setters
+    public Long getFormationId() {
+        return formationId;
+    }
+
+    public void setFormationId(Long formationId) {
+        this.formationId = formationId;
+    }
+
+    public Long getRessourceId() {
+        return ressourceId;
+    }
+
+    public void setRessourceId(Long ressourceId) {
+        this.ressourceId = ressourceId;
     }
 }

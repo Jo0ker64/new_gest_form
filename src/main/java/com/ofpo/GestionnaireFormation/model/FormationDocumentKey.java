@@ -2,15 +2,11 @@ package com.ofpo.GestionnaireFormation.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-@Getter
-@Setter
 public class FormationDocumentKey implements Serializable {
 
     @Column(name = "id_formation")
@@ -18,6 +14,10 @@ public class FormationDocumentKey implements Serializable {
 
     @Column(name = "id_document")
     private Long documentId;
+
+    public FormationDocumentKey() {
+    }
+
 
     // equals() et hashCode() obligatoires pour les clés composites
     @Override
@@ -32,5 +32,20 @@ public class FormationDocumentKey implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(formationId, documentId);
+    }
+
+    // Getters and Setters
+    public Long getFormationId() {
+        return formationId;
+    }
+    public void setFormationId(Long formationId) {
+        this.formationId = formationId;
+    }
+
+    public Long getDocumentId() {
+        return documentId;
+    }
+    public void setDocumentId(Long documentId) {
+        this.documentId = documentId;
     }
 }
