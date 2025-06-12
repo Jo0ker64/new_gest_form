@@ -2,9 +2,6 @@ package com.ofpo.GestionnaireFormation.DTO;
 
 import com.ofpo.GestionnaireFormation.DTO.formation.FormationDTO;
 import com.ofpo.GestionnaireFormation.model.Salle;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.util.List;
 

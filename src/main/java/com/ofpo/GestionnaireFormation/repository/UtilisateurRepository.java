@@ -15,4 +15,6 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
     List<Utilisateur> findByRoles(Role role);
 
     List<Utilisateur> findByRolesId(Long id);
+
+    Utilisateur findByAdresseMail(String email);
 }

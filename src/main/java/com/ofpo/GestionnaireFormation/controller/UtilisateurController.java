@@ -7,6 +7,9 @@ import com.ofpo.GestionnaireFormation.DTO.utilisateur.UtilisateurUpdateDTO;
 import com.ofpo.GestionnaireFormation.model.Formation;
 import com.ofpo.GestionnaireFormation.model.Utilisateur;
 import com.ofpo.GestionnaireFormation.repository.UtilisateurRepository;
+import com.ofpo.GestionnaireFormation.service.UtilisateurService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,13 +63,15 @@ import java.util.List;
 
 // AVEC DTO
 @RestController
-@RequestMapping("/utilisateurs")
+@RequestMapping("/api/utilisateurs")
 public class UtilisateurController {
 
     private final UtilisateurRepository utilisateurRepository;
+    private final UtilisateurService utilisateurService;
 
-    public UtilisateurController(UtilisateurRepository utilisateurRepository) {
+    public UtilisateurController(UtilisateurRepository utilisateurRepository, UtilisateurService utilisateurService) {
         this.utilisateurRepository = utilisateurRepository;
+        this.utilisateurService = utilisateurService;
     }
 
     @GetMapping("/")
@@ -169,53 +174,3 @@ public class UtilisateurController {
         return utilisateur.getFormations();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    @GetMapping("/")
-//    public List<UtilisateurDTO> findAll() {
-//        return utilisateurService.findAll().stream()
-//                .map(utilisateurService::mapToDTO)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @GetMapping("/{matricule}")
-//    public UtilisateurDTO findByMatricule(@PathVariable String matricule) {
-//        return utilisateurService.mapToDTO(
-//                utilisateurService.findByMatricule(matricule));
-//    }
-//
-//    @PostMapping("/create")
-//    public UtilisateurDTO add(@RequestBody UtilisateurDTO dto) {
-//        Utilisateur saved = utilisateurService.saveFromDTO(dto);
-//        return utilisateurDTO;
-//    }
-//
-//    @PutMapping("/update/{matricule}")
-//    public UtilisateurDTO update(@PathVariable String matricule, @RequestBody UtilisateurDTO dto) {
-//        Utilisateur updated = utilisateurService.updateFromDTO(matricule, dto);
-//        return utilisateurService.mapToDTO(updated);
-//    }
-//
-//    @DeleteMapping("/delete/{matricule}")
-//    public void delete(@PathVariable String matricule) {
-//        utilisateurService.deleteByMatricule(matricule);
-//    }
-//
-//    @PutMapping("/disable/{matricule}")
-//    public void disable(@PathVariable String matricule) {
-//        utilisateurService.disableByMatricule(matricule);
-//    }

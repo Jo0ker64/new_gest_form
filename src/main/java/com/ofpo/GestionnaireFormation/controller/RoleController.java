@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import static org.hibernate.Hibernate.map;
 
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("/api/roles")
 public class RoleController {
 
     private final RoleService roleService;

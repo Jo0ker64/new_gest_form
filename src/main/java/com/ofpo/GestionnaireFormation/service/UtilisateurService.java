@@ -9,6 +9,11 @@ import com.ofpo.GestionnaireFormation.DTO.utilisateur.UtilisateurCreateDTO;
 import com.ofpo.GestionnaireFormation.model.Formation;
 import com.ofpo.GestionnaireFormation.model.Utilisateur;
 import com.ofpo.GestionnaireFormation.repository.UtilisateurRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -106,4 +111,40 @@ public class UtilisateurService {
 
         return user.getFormations();
     }
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public Utilisateur createUtilisateur(Utilisateur utilisateur) {
+        utilisateur.setMotDePasse(passwordEncoder.encode(utilisateur.getMotDePasse()));
+        if (!utilisateur.getMotDePasse().startsWith("$2a$")) {
+            utilisateur.setMotDePasse(passwordEncoder.encode(utilisateur.getMotDePasse()));
+        }
+        return utilisateurRepository.save(utilisateur);
+    }
+
+    @Service
+    public class UtilisateurDetailsService implements UserDetailsService {
+
+        private final UtilisateurRepository utilisateurRepository;
+
+        public UtilisateurDetailsService(UtilisateurRepository utilisateurRepository) {
+            this.utilisateurRepository = utilisateurRepository;
+        }
+
+        @Override
+        public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+            Utilisateur utilisateur = utilisateurRepository.findByAdresseMail(email);
+            if (utilisateur == null) {
+                throw new UsernameNotFoundException("Utilisateur non trouvé avec l'email : " + email);
+            }
+
+            return org.springframework.security.core.userdetails.User
+                    .withUsername(utilisateur.getAdresseMail())
+                    .password(utilisateur.getMotDePasse())
+                    .roles("USER") // Tu peux adapter en fonction de ton système de rôles
+                    .build();
+        }
+    }
+
 }

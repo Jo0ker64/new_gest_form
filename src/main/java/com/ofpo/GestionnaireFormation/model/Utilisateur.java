@@ -2,7 +2,6 @@ package com.ofpo.GestionnaireFormation.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +33,7 @@ public class Utilisateur {
     )
     @JsonIgnore
     private List<Role> roles = new ArrayList<>();
+    private String role = "ROLE_USER";
 
     @ManyToMany
     @JoinTable(
@@ -155,4 +155,5 @@ public class Utilisateur {
     public void setFormations(List<Formation> formations) {
         this.formations = formations;
     }
+
 }

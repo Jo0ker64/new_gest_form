@@ -1,8 +1,6 @@
 package com.ofpo.GestionnaireFormation.model;
 
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;

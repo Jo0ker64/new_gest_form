@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sequences")
+@RequestMapping("/api/sequences")
 public class SequenceController {
 
     private final SequenceService sequenceService;
