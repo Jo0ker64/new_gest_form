@@ -19,8 +19,7 @@ public class Role {
     private Boolean statut;
 
     @ManyToMany(mappedBy = "roles")
-    @JsonIgnore
-    private List<Utilisateur> utilisateurs = new ArrayList<>();
+    private List<Utilisateur> utilisateurs;
 
     public Role() {
     }
