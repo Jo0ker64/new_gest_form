@@ -29,7 +29,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return request.getServletPath().equals("/api/login");
     }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -57,6 +56,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
+        System.out.println(" CONTEXTE FINAL : " + SecurityContextHolder.getContext().getAuthentication());
+
         filterChain.doFilter(request, response);
     }
+
 }

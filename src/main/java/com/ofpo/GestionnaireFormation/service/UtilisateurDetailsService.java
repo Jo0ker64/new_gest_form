@@ -21,18 +21,21 @@ public class UtilisateurDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Utilisateur utilisateur = utilisateurRepository.findByAdresseMail(email);
         if (utilisateur == null) {
-            throw new UsernameNotFoundException("Utilisateur non trouvé");
+            throw new UsernameNotFoundException("Utilisateur non trouvé : " + email);
         }
 
+        // 💡 Ne pas préfixer avec ROLE_ ici, Spring le fait tout seul
         String[] roles = utilisateur.getRoles()
                 .stream()
-                .map(role -> "ROLE_" + role.getLibelle()) // 👈 important
+                .map(role -> role.getLibelle().toUpperCase()) // Ex: "UTILISATEUR", "ADMIN"
                 .toArray(String[]::new);
 
+        System.out.println("Chargement utilisateur : " + email);
+        System.out.println("Rôles utilisés : " + String.join(", ", roles));
 
         return User.withUsername(utilisateur.getAdresseMail())
-                .password(utilisateur.getMotDePasse())
-                .roles(roles)
+                .password(utilisateur.getMotDePasse()) // bcrypt déjà encodé
+                .roles(roles) // Spring ajoute automatiquement le prefixe ROLE_
                 .build();
     }
 }
